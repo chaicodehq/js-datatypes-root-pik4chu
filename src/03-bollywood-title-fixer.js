@@ -31,4 +31,27 @@
  */
 export function fixBollywoodTitle(title) {
   // Your code here
+  if(typeof title !== "string" ) return "";
+  title = title.trim();
+  if(title === "") return "";
+  const smallWord = ["ka", "ki", "ke", "se", "aur", "ya", "the", "of", "in", "a", "an"]
+
+  const words = title.split(/\s+/);
+
+  const formaatted = words.map((word , index)=>{
+    const lower = word.toLowerCase();
+    if(index !== 0 && smallWord.includes(lower)) return lower
+
+ 
+    return lower.charAt(0).toUpperCase() + lower.slice(1)
+  })
+
+  return formaatted.join(" ");
+  
+
 }
+
+
+
+
+fixBollywoodTitle("  DILWALE   DULHANIA   LE   JAYENGE  ")

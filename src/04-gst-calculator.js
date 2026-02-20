@@ -13,7 +13,7 @@
  *   - "luxury"      => 28% GST (cars, aerated drinks, tobacco)
  *   - Any other category => return null
  *
- * Rules:
+ * Rules:                         
  *   - Calculate: gstAmount = amount * rate / 100
  *   - Calculate: totalAmount = amount + gstAmount
  *   - Round gstAmount aur totalAmount to 2 decimal places using
@@ -40,4 +40,55 @@
  */
 export function calculateGST(amount, category) {
   // Your code here
+  if (!Number.isFinite(amount) || amount <= 0) return null;
+
+  if(typeof category !== "string") return null;
+
+  const type = category.toLowerCase();
+
+
+//   "essential"   => 0% GST  (dal, chawal, atta, etc.)
+//  *   - "food"        => 5% GST  (packaged food, restaurant below Rs 7500)
+//  *   - "standard"    => 12% GST (processed food, business class tickets)
+//  *   - "electronics" => 18% GST (phones, laptops, etc.)
+//  *   - "luxury"      => 28% GST (cars, aerated drinks, tobacco)
+//  *   - Any other category => return null
+
+
+  let gstRate;
+  switch(type){
+    case "essential":
+    gstRate = 0;
+    break;
+
+    case "food":
+      gstRate = 5;
+      break;
+
+     case  "standard":
+      gstRate = 12
+      break;
+
+      case "electronics":
+        gstRate = 18
+        break;
+
+       case "luxury" :
+        gstRate = 28;
+        break;
+       default :
+        return null; 
+  }
+
+  const gstAmount = parseFloat((amount * gstRate/100).toFixed(2))
+  const totalAmount = parseFloat((amount+gstAmount))
+
+  return {
+    baseAmount : amount,
+    gstRate,
+    gstAmount,
+    totalAmount
+  }
+
+
 }
