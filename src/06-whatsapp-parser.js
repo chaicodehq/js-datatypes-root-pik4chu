@@ -1,6 +1,7 @@
 /**
  * 💬 WhatsApp Message Parser
  *
+ *
  * Chintu ek WhatsApp chat analyzer bana raha hai. Usse raw WhatsApp
  * exported message line parse karni hai aur usme se date, time, sender,
  * aur message alag alag extract karna hai.
@@ -40,4 +41,29 @@
  */
 export function parseWhatsAppMessage(message) {
   // Your code here
+  if (typeof message !== "string") return null;
+  if (!message.includes("-") || !message.includes(":")) return null;
+
+  const date = message.substring(0, message.indexOf(","));
+  const time = message.substring(
+    message.indexOf(", ") + 2,
+    message.indexOf(" - "),
+  );
+  const senderName = message.substring(
+    message.indexOf("-"),
+    message.indexOf(":"),
+  );
+  const textMessage = message.substring(message.indexOf(":"), message.indexOf("?"));
+  const wordCount = message.split(" ").length;
+  let expression = message.slice("?")[1];
+  let sentiment = "";
+
+  if(["😂","haha"].some(word => textMessage.includes(word))) sentiment="funny";
+  else if(["❤", "love", "pyaar"].some(word => textMessage.includes(word))) sentiment="love";
+  else sentiment="neutral"
+  
+  return `
+    { date: ${date}, time: ${time}, sender: ${senderName},
+ *   //      text: ${textMessage}, wordCount: ${wordCount}, sentiment: ${sentiment} }
+  `;
 }
