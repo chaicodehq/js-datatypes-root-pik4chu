@@ -42,4 +42,71 @@
  */
 export function generateReportCard(student) {
   // Your code here
+//   Agar student object nahi hai ya null hai, return null
+//  *   - Agar student.name string nahi hai ya empty hai, return null
+//  *   - Agar student.marks object nahi hai ya empty hai (no keys), return null
+//  *   - Agar koi mark valid number nahi hai (not between 0 and 100 inclusive),
+//  *     return null
+  if(!student  ||
+    typeof student !==  "object" || 
+     
+    typeof student.name !==  "string" ||
+    student.name.trim() === "" || 
+
+    typeof student.marks !==  "object" || 
+    student.marks === null ||
+    Object.keys(student.marks).length === 0 ||
+
+    !Object.values(student.marks).every(
+      marks => typeof marks === "number" 
+      && marks >= 0
+      && marks <= 100
+    )
+  ) return null;
+
+  const name = student.name;
+  const marks = student.marks;
+  const totalMarks =  Object.values(student.marks)
+    .reduce((acc , i) => acc+i , 0);
+
+  const subjectCount = Object.keys(student.marks).length
+  const percentage = parseFloat(
+    ((totalMarks / (subjectCount * 100)) * 100).toFixed(2)
+  );
+
+
+  let grade;
+  if(percentage >= 90 ) grade= "A+" 
+  else if (percentage >= 80 ) grade= "A"
+  else if (percentage >= 70 ) grade= "B"
+  else if( percentage >= 60 ) grade= "C"
+  else if(percentage >= 40) grade="D"
+  else if (percentage < 40) grade= "F"
+
+
+  const highestSubject = Object.entries(student.marks)
+  .reduce((a,b)=> a[1] > b[1] ? a : b)[0]
+
+  const lowestSubject = Object.entries(student.marks)
+  .reduce((a,b)=> a[1] < b[1] ? a : b)[0]
+  
+  const passedSubjects = Object.entries(student.marks)
+  .filter(([subject , marks]) => marks >= 40)
+  .map(([subject]) => subject)
+
+  const failedSubjects = Object.entries(student.marks)
+  .filter(([subject , marks]) => marks < 40)
+  .map(([subject]) => subject)
+
+  return {
+    name,
+    totalMarks,
+    percentage,
+    grade,
+    highestSubject,
+    lowestSubject,
+    passedSubjects,
+    failedSubjects,
+    subjectCount
+  };
 }
