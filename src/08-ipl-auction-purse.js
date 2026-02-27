@@ -44,5 +44,58 @@
  *   // => { ..., remaining: -1200, isOverBudget: true }
  */
 export function iplAuctionSummary(team, players) {
+
+//   Validation:
+//  *   - Agar team object nahi hai ya team.purse positive number nahi hai, return null
+//  *   - Agar players array nahi hai ya empty hai, return null
+ if (
+  !team ||
+  typeof team !== "object" ||
+  typeof team.purse !== "number" ||
+  team.purse <= 0
+) return null;
+
+if (!Array.isArray(players) || players.length === 0) return null;
+
   // Your code here
+  const purse = team.purse
+//   - totalSpent: sum of all player prices (use reduce)
+
+  const totalSpent = players.reduce((acc , player)=> acc + player.price , 0)
+//  *     - remaining: purse - totalSpent
+  const remaining = purse - totalSpent;
+//  *     - playerCount: total players bought
+  const playerCount = players.length;
+//  *     - costliestPlayer: player object with highest price
+// const costliestPlayer = players.reduce((acc , player)=>Math.max(acc , player.price) , -Infinity) we dont wnat this apne ko object chahiye .. 
+  const costliestPlayer = players.reduce((acc , player)=> player.price > acc.price ? player : acc , players[0]) // now ok this will return the max walal object 
+//  *     - cheapestPlayer: player object with lowest price
+  const cheapestPlayer = players.reduce((acc , player)=> player.price < acc.price ? player : acc , players[0])
+//  *     - averagePrice: Math.round(totalSpent / playerCount)
+  const averagePrice = Math.round(totalSpent / playerCount)
+  
+//  *     - byRole: object counting players per role using reduce
+//  *       e.g., { bat: 3, bowl: 4, ar: 2, wk: 1 }
+    const byRole = {};
+    for(const player of players){
+      const role = player.role;
+      byRole[role] = (byRole[role] || 0) + 1 
+    }
+
+  
+
+//  *     - isOverBudget: boolean, true agar totalSpent > purse
+    const isOverBudget = totalSpent > purse
+
+    return {
+    teamName: team.name,
+    totalSpent,
+    remaining,
+    playerCount,
+    costliestPlayer,
+    cheapestPlayer,
+    averagePrice,
+    byRole,
+    isOverBudget
+  };
 }

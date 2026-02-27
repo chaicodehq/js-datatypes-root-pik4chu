@@ -48,4 +48,102 @@
  */
 export function analyzeUPITransactions(transactions) {
   // Your code here
+
+  if(!Array.isArray(transactions) || transactions.length === 0 ) return null
+
+
+  const validTransitions = transactions.filter(
+    (item) =>
+      typeof item.amount === "number" &&
+        item.amount > 0 &&
+        (item.type === "credit" || item.type === "debit")
+  );
+
+  if(validTransitions.length === 0) return null 
+
+
+  const totalCredit = validTransitions.reduce((acc, transaction) => {
+    if (transaction.type === "credit") {
+      return acc + Number(transaction.amount);
+    }
+    return acc;
+  }, 0);
+
+  const totalDebit = validTransitions.reduce((acc, transaction) => {
+    if (transaction.type === "debit") {
+      return acc + Number(transaction.amount);
+    }
+    return acc;
+  }, 0);
+
+  const netBalance = totalCredit - totalDebit;
+
+  //      transactionCount: total number of valid transactions
+  const transactionCount = validTransitions.length;
+  //  *     - avgTransaction: Math.round(sum of all valid amounts / transactionCount)
+
+  const totalAmount = validTransitions.reduce(
+    (acc, item) => acc + item.amount,
+    0,
+  );
+  const avgTransaction =
+    transactionCount > 0 ? Math.round(totalAmount / transactionCount) : 0;
+
+  //   - highestTransaction: the full transaction object with highest amount
+
+  const highestTransaction = validTransitions.reduce((max, transaction) => {
+    if (transaction.amount > max.amount) return transaction;
+    return max;
+  }, validTransitions[0]);
+
+  //  *     - categoryBreakdown: object with category as key and total amount as value
+  //  *       e.g., { food: 1500, travel: 800 } (include both credit and debit)
+  const categoryBreakdown = validTransitions.reduce((acc, transaction) => {
+    const category = transaction.category;
+
+    if (!acc[category]) {
+      acc[category] = 0;
+    }
+
+    acc[category] += transaction.amount;
+
+    return acc;
+  }, {});
+
+
+  const contactCount = {};
+  let frequentContact = null;
+  let maxCount = 0;
+
+  for(const transaction of validTransitions){
+    const person = transaction.to;
+
+
+    contactCount[person] = (contactCount[person] || 0) + 1;
+
+    if(contactCount[person] > maxCount){
+      maxCount = contactCount[person];
+      frequentContact = person;
+    }
+  }
+
+  const allAbove100 = validTransitions.every(
+    transaction=> transaction.amount > 100
+  )
+  const hasLargeTransaction = validTransitions.some(
+    transaction => transaction.amount >= 5000
+  )
+
+  return{
+    totalCredit,
+    totalDebit,
+    netBalance,
+    transactionCount,
+    avgTransaction,
+    highestTransaction,
+    categoryBreakdown,
+    frequentContact,
+    allAbove100,
+    hasLargeTransaction
+  }
 }
